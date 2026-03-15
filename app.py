@@ -3,43 +3,45 @@ import random
 
 app = Flask(__name__)
 
+# Home page
 @app.route("/")
 def home():
     return render_template("index.html")
 
-
+# Simulation API
 @app.route("/simulate", methods=["POST"])
 def simulate():
+    # Get form data
+    attacker = request.form.get("attacker")
+    defender = request.form.get("defender")
 
-    attacker = request.form["attacker"]
-    defender = request.form["defender"]
-
+    # Alliances mapping
     alliances = {
-        "USA":["UK","Germany","France","Japan","South Korea"],
-        "Russia":["China","Iran"],
-        "China":["North Korea","Pakistan"],
-        "India":["USA","France"],
-        "Pakistan":["China"],
-        "Iran":["Syria","Lebanon"],
-        "Israel":["USA"],
-        "North Korea":["China"],
-        "South Korea":["USA","Japan"]
+        "USA": ["UK", "Germany", "France", "Japan", "South Korea"],
+        "Russia": ["China", "Iran"],
+        "China": ["North Korea", "Pakistan"],
+        "India": ["USA", "France"],
+        "Pakistan": ["China"],
+        "Iran": ["Syria", "Lebanon"],
+        "Israel": ["USA"],
+        "North Korea": ["China"],
+        "South Korea": ["USA", "Japan"]
     }
 
+    # Affected countries
     affected = []
-
     if attacker in alliances:
         affected += alliances[attacker]
-
     if defender in alliances:
         affected += alliances[defender]
 
-    oilImpact = random.randint(30,80)
-    tradeImpact = random.randint(20,70)
-    gdpLoss = random.randint(10,50)
+    # Randomized impacts
+    oilImpact = random.randint(30, 80)
+    tradeImpact = random.randint(20, 70)
+    gdpLoss = random.randint(10, 50)
 
-    risk = random.randint(0,100)
-
+    # Risk prediction
+    risk = random.randint(0, 100)
     if risk > 70:
         prediction = "High chance of global war escalation"
     elif risk > 40:
@@ -47,20 +49,19 @@ def simulate():
     else:
         prediction = "Limited conflict expected"
 
+    # Effects lists
     direct_effects = [
         "Heavy military confrontation",
         "Air strikes and missile attacks",
         "Infrastructure destruction",
         "Civilian displacement"
     ]
-
     indirect_effects = [
         "Oil prices surge globally",
         "Trade routes disrupted",
         "Stock markets unstable",
         "Global food supply affected"
     ]
-
     timeline = [
         "Day 1: Initial strike",
         "Day 3: Counter attack",
@@ -69,6 +70,7 @@ def simulate():
         "Day 30: Global diplomatic negotiations"
     ]
 
+    # Report string
     report = f"""
 AI Strategic Analysis:
 
@@ -77,6 +79,7 @@ Allied countries may join rapidly through military alliances.
 Energy markets and trade supply chains will be affected globally.
 """
 
+    # Return JSON response
     return jsonify({
         "prediction": prediction,
         "oilImpact": oilImpact,
@@ -91,5 +94,6 @@ Energy markets and trade supply chains will be affected globally.
     })
 
 
+# Run locally
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000)
